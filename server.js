@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 
 const dotenv = require("dotenv");
-dotenv.config({ path: "./config/config.env" });
+dotenv.config();
 const connectDb = require("./config/db");
 
 app.use(express.json({ limit: "100mb" }));
