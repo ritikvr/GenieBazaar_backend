@@ -61,9 +61,8 @@ exports.newOrder = async (req, res) => {
     res.status(201).json(order);
   } catch (error) {
     res.status(500).json({
-      Error: error.message,
+      message: error.message,
     });
-    console.log(error.message);
   }
 };
 
@@ -85,7 +84,7 @@ exports.getOrderDetails = async (req, res) => {
     res.status(200).json(order);
   } catch (error) {
     res.status(500).json({
-      Error: error.message,
+      message: error.message,
     });
   }
 };
@@ -97,7 +96,7 @@ exports.myOrders = async (req, res) => {
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).json({
-      Error: error.message,
+      message: error.message,
     });
   }
 };

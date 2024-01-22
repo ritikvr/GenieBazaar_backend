@@ -42,7 +42,9 @@ exports.registerUser = async (req, res) => {
       throw new Error("Failed to create user");
     }
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -72,8 +74,8 @@ exports.loginUser = async (req, res) => {
       throw new Error("Unauthorised user");
     }
   } catch (error) {
-    res.json({
-      Error: error.message,
+    res.status(500).json({
+      message: error.message,
     });
   }
 };
@@ -120,8 +122,8 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
-    res.json({
-      Error: error.message,
+    res.status(500).json({
+      message: error.message,
     });
   }
 };
@@ -136,7 +138,7 @@ exports.updatePassword = async (req, res) => {
     const user = await User.findById(req.user.id);
     const isPasswordMatched = await user.matchPassword(req.body.oldPassword);
     if (!isPasswordMatched) {
-      throw new Error("Password is not matched");
+      throw new Error("Old password is not matched");
     }
     if (req.body.newPassword != req.body.confirmPassword) {
       throw new Error("new password and confirm password not matched");
@@ -147,8 +149,8 @@ exports.updatePassword = async (req, res) => {
       user,
     });
   } catch (error) {
-    res.status(400).json({
-      Error: error.message,
+    res.status(500).json({
+      message: error.message,
     });
   }
 };
@@ -183,10 +185,9 @@ exports.updateProfile = async (req, res) => {
     );
     res.status(200).json({ user });
   } catch (error) {
-    res.status(400).json({
-      Error: error.message,
+    res.status(500).json({
+      message: error.message,
     });
-    console.log(error.message);
   }
 };
 

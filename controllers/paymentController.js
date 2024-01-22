@@ -13,7 +13,7 @@ exports.processPayment = async (req, res) => {
     res.status(200).json({ client_secret: myPayment.client_secret });
   } catch (error) {
     res.status(500).json({
-      Error: error.message,
+      message: error.message,
     });
   }
 };

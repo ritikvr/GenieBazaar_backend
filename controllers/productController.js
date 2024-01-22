@@ -48,7 +48,7 @@ exports.createProduct = async (req, res) => {
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({
-      Error: error.message,
+      message: error.message,
     });
   }
 };
@@ -97,7 +97,9 @@ exports.getAllProducts = async (req, res) => {
       .status(200)
       .json({ products, productCount, perPage, filteredProductCount });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -106,6 +108,9 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductDetails = async (req, res) => {
   try {
     const productId = req.params.id;
+    if (productId.length !== 24) {
+      throw new Error("product id is not valid");
+    }
     const product = await Product.findById(productId).populate({
       path: "reviews.user",
       model: "User",
@@ -118,7 +123,9 @@ exports.getProductDetails = async (req, res) => {
     }
     res.status(200).json({ product });
   } catch (error) {
-    res.send(error);
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
@@ -239,7 +246,7 @@ exports.createProductReview = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      Error: error.message,
+      message: error.message,
     });
   }
 };
@@ -313,6 +320,8 @@ exports.getAdminProducts = async (req, res) => {
 
     res.status(200).json({ products });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
