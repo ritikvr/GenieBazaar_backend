@@ -12,16 +12,16 @@ const {
 const router = express.Router();
 
 router.route("/order/new").post(authMiddleware, newOrder);
-router.route("/order/:id").get(authMiddleware, getOrderDetails);
-router.route("/me/orders").get(authMiddleware, myOrders);
+router.route("/order/:id").post(authMiddleware, getOrderDetails);
+router.route("/me/orders").post(authMiddleware, myOrders);
 
 router
   .route("/admin/orders")
-  .get(authMiddleware, authRoles("admin"), getAllOrders);
+  .post(authMiddleware, authRoles("admin"), getAllOrders);
 
 router
   .route("/admin/order/:id")
   .put(authMiddleware, authRoles("admin"), updateOrder)
-  .delete(authMiddleware, authRoles("admin"), deleteOrder);
+  .post(authMiddleware, authRoles("admin"), deleteOrder);
 
 module.exports = router;

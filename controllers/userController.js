@@ -36,7 +36,7 @@ exports.registerUser = async (req, res) => {
           ),
           // httpOnly: true,
         })
-        .json({ user });
+        .json({ user, token });
     } else {
       res.status(400);
       throw new Error("Failed to create user");
@@ -64,12 +64,13 @@ exports.loginUser = async (req, res) => {
           expires: new Date(
             Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
           ),
-          sameSite: 'None',
+          sameSite: "None",
           secure: true,
           httpOnly: true,
         })
         .json({
           user,
+          token,
         });
     } else {
       res.status(400);
@@ -131,21 +132,29 @@ exports.forgotPassword = async (req, res) => {
 };
 
 exports.getUserDetails = async (req, res) => {
-  const user = await User.findById(req.user.id);
-  res.status(200).json({ user });
+  try {
+    const user = await User.findById(req.user.id);
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 exports.updatePassword = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    const isPasswordMatched = await user.matchPassword(req.body.oldPassword);
+    const isPasswordMatched = await user.matchPassword(
+      req.body.passwords.oldPassword
+    );
     if (!isPasswordMatched) {
       throw new Error("Old password is not matched");
     }
-    if (req.body.newPassword != req.body.confirmPassword) {
+    if (req.body.passwords.newPassword != req.body.passwords.confirmPassword) {
       throw new Error("new password and confirm password not matched");
     }
-    user.password = req.body.newPassword;
+    user.password = req.body.passwords.newPassword;
     await user.save();
     res.status(200).json({
       user,
@@ -160,19 +169,22 @@ exports.updatePassword = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const newUserData = {
-      name: req.body.name,
-      email: req.body.email,
+      name: req.body.userData.name,
+      email: req.body.userData.email,
     };
-    if (typeof req.body.avatar === "string") {
+    if (typeof req.body.userData.avatar === "string") {
       const user = await User.findById(req.user.id);
       if (user.avatar && user.avatar.public_id) {
         await cloudinary.v2.uploader.destroy(user.avatar.public_id);
       }
-      const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-        folder: "avatar",
-        width: 150,
-        crop: "scale",
-      });
+      const myCloud = await cloudinary.v2.uploader.upload(
+        req.body.userData.avatar,
+        {
+          folder: "avatar",
+          width: 150,
+          crop: "scale",
+        }
+      );
       newUserData.avatar = {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
@@ -227,9 +239,9 @@ exports.getUserForAdmin = async (req, res) => {
 exports.updateUserRole = async (req, res) => {
   try {
     const newUserData = {
-      name: req.body.name,
-      email: req.body.email,
-      role: req.body.role,
+      name: req.body.userData.name,
+      email: req.body.userData.email,
+      role: req.body.userData.role,
     };
     const user = await User.findOneAndUpdate(
       { _id: req.params.id },

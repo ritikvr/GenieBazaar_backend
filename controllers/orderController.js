@@ -17,7 +17,7 @@ exports.newOrder = async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
-    } = req.body;
+    } = req.body.orderData;
     if (!address || !city || !state || !country || !pinCode || !phoneNo) {
       throw new Error("please provide the complete shiping information");
     }
@@ -32,7 +32,7 @@ exports.newOrder = async (req, res) => {
     if (!paymentInfo.id || !paymentInfo.status) {
       throw new Error("please provide the payment id and status correctly");
     }
-    if (!itemsPrice || !taxPrice || !shippingPrice || !totalPrice) {
+    if (!itemsPrice || !taxPrice || !totalPrice) {
       throw new Error("Please provide all the prices");
     }
     const shippingInfo = {
@@ -124,7 +124,7 @@ exports.getAllOrders = async (req, res) => {
 exports.updateOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
-    const status = req.body.status;
+    const status = req.body.orderData.status;
     if (!orderId || !status) {
       throw new Error("please provide the order id and status");
     }

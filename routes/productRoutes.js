@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.get("/products", getAllProducts);
 
-router.get(
+router.post(
   "/admin/products",
   authMiddleware,
   authRoles("admin"),
@@ -34,7 +34,7 @@ router.put(
   authRoles("admin"),
   updateProduct
 );
-router.delete(
+router.post(
   "/admin/product/:id",
   authMiddleware,
   authRoles("admin"),
@@ -45,6 +45,6 @@ router.put("/review", authMiddleware, createProductReview);
 router
   .route("/reviews")
   .get(getProductReviews)
-  .delete(authMiddleware, deleteReview);
+  .post(authMiddleware, deleteReview);
 
 module.exports = router;

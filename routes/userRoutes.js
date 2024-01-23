@@ -20,15 +20,18 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/logout", logoutUser);
 router.post("/password/forgot", forgotPassword);
-router.get("/me", authMiddleware, getUserDetails);
+router.post("/me", authMiddleware, getUserDetails);
 router.put("/password/update", authMiddleware, updatePassword);
 router.put("/me/update", authMiddleware, updateProfile);
 
-router.get("/admin/users", authMiddleware, authRoles("admin"), getAllUsers);
+router.post("/admin/users", authMiddleware, authRoles("admin"), getAllUsers);
 router
   .route("/admin/user/:id")
-  .get(authMiddleware, authRoles("admin"), getUserForAdmin)
-  .put(authMiddleware, authRoles("admin"), updateUserRole)
-  .delete(authMiddleware, authRoles("admin"), deleteUser);
+  .post(authMiddleware, authRoles("admin"), getUserForAdmin)
+  .put(authMiddleware, authRoles("admin"), updateUserRole);
+
+router
+  .route("/admin/user/delete/:id")
+  .post(authMiddleware, authRoles("admin"), deleteUser);
 
 module.exports = router;

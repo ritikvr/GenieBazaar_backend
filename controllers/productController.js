@@ -8,7 +8,7 @@ exports.createProduct = async (req, res) => {
   try {
     req.body.user = req.user.id;
 
-    let images = req.body.images;
+    let images = req.body.productData.images;
 
     let imagesLink = [];
 
@@ -31,8 +31,8 @@ exports.createProduct = async (req, res) => {
       stock,
       numOfReviews,
       reviews,
-      user,
-    } = req.body;
+    } = req.body.productData;
+    const user = req.body.user;
     const product = await Product.create({
       name: name,
       description: description,
@@ -141,7 +141,7 @@ exports.updateProduct = async (req, res) => {
         message: "product not found",
       });
     }
-    let images = req.body.image;
+    let images = req.body.productData.image;
     let imagesLink = [];
     if (images !== undefined && typeof images[0] === "string") {
       for (let i = 0; i < product.image.length; i++) {
@@ -159,11 +159,11 @@ exports.updateProduct = async (req, res) => {
         });
       }
     }
-    req.body.image = imagesLink;
+    req.body.productData.image = imagesLink;
     if (typeof images[0] === "object") {
-      req.body.image = images;
+      req.body.productData.image = images;
     }
-    product = await Product.findByIdAndUpdate(productId, req.body, {
+    product = await Product.findByIdAndUpdate(productId, req.body.productData, {
       new: true,
     });
     res.status(200).json(product);
@@ -207,7 +207,7 @@ exports.deleteProduct = async (req, res) => {
 
 exports.createProductReview = async (req, res) => {
   try {
-    const { rating, comment, productId } = req.body;
+    const { rating, comment, productId } = req.body.reviewData;
     const review = {
       user: req.user.id,
       name: req.user.name,

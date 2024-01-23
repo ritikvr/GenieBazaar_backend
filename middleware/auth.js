@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    const { token } = req.body;
     if (!token) {
       res.status(401);
       throw new Error("Not Authorized");
@@ -13,7 +13,7 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     res.json({
-      Error: error.message,
+      message: error.message,
     });
   }
 };
@@ -26,7 +26,7 @@ const authRoles = (role) => (req, res, next) => {
     next();
   } catch (error) {
     res.json({
-      Error: error.message,
+      message: error.message,
     });
   }
 };
